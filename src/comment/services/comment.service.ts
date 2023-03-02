@@ -92,24 +92,16 @@ export class CommentService {
     }
   }
 
-  async updateComment(updateCommentDto: UpdateCommentDto): Promise<Comment> {
+  async updateComment(updateCommentDto: UpdateCommentDto) {
     try {
 
-      const commentExist = await this.commentModel.findById(updateCommentDto.id);
+      const commentUpdated = await this.commentModel.findByIdAndUpdate(
+        updateCommentDto.id, 
+        updateCommentDto, 
+        {new: true}
+      );
 
-      if (!commentExist) throw new BadRequestException(`Comentário com título ${updateCommentDto.title} não existe`);
-
-      const updateComment = new this.commentModel(updateCommentDto);
-
-      const responseUpdateComment = await updateComment.updateOne(
-        { _id: commentExist._id},
-        {
-          $set: { title: updateCommentDto.title, body: updateCommentDto.body }
-          //{ $currentDate: { lastUpdated: true } }
-        }
-        )
-
-      return responseUpdateComment.id;
+      return commentUpdated.id;
 
     } catch (ex) {
       throw new InternalServerErrorException('Internal server error');
