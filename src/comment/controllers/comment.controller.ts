@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpStatus, Query } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, Res, HttpStatus, Query, Put } from '@nestjs/common';
 import { CommentService } from '../services/comment.service';
 import { CreateCommentDto } from '../dto/create-comment.dto';
 import { UpdateCommentDto } from '../dto/update-comment.dto';
@@ -45,9 +45,23 @@ export class CommentController {
   @ApiOperation({ summary: 'Adicionar um comentário' })
   async createComment(
     @Res() response,
-    @Body() payload: CreateCommentDto
+    @Body() payloadCreate: CreateCommentDto
   ) {
-    const commentResponse = await this.commentService.createUser(payload);
+    const commentResponse = await this.commentService.createComment(payloadCreate);
+
+    response.status(HttpStatus.CREATED).send({
+      message: 'Comment successfully created',
+      id: commentResponse
+    })
+  }
+
+  @Put()    
+  @ApiOperation({ summary: 'Adicionar um comentário' })
+  async updateComment(
+    @Res() response,
+    @Body() payloadUpdate: UpdateCommentDto
+  ) {
+    const commentResponse = await this.commentService.updateComment(payloadUpdate);
 
     response.status(HttpStatus.CREATED).send({
       message: 'Comment successfully created',
