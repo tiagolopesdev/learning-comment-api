@@ -6,22 +6,50 @@ import { CommentDocument } from '../entities/comment.entity';
 
 @Injectable()
 export class CommentService {
+  
   constructor(
     @InjectModel('comment') private readonly commentModel: Model<CommentDocument>
   ) { }
+
+  async getCommentsByTitle(name: string) {
+    try {
+
+      const comments: CreateCommentDto[] = [];
+
+      const results = await this.commentModel.find();
+
+      results.map((item) => {    
+        if (item.title.toLocaleLowerCase().includes(name.toLocaleLowerCase())) {
+          comments.push(
+            CreateCommentDto.convertAllElements(
+              item.id,
+              item.title,
+              item.body,
+              item.author,
+            )
+          )
+        }
+      });
+
+      return comments;
+
+    } catch (ex) {
+      throw new InternalServerErrorException(`Não foi possível obter comentários com título ${name}`);
+    }
+  }
 
   async getCommentsById(id: string) {
     try {
       const results = await this.commentModel.findById(id);
 
       return CreateCommentDto.convertAllElements(
-        results.id, 
+        results.id,
         results.title,
-        results.body, 
+        results.body,
         results.author
       );
     } catch (ex) {
-      throw new InternalServerErrorException('Internal server error');
+      throw new InternalServerErrorException('Não foi possivel obter comentário');
     }
   }
 
@@ -46,7 +74,7 @@ export class CommentService {
       return comments;
 
     } catch (ex) {
-      throw new InternalServerErrorException('Internal server error');
+      throw new InternalServerErrorException('Não foi possivel obter comentários');
     }
   }
 
