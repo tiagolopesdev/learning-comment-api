@@ -1,26 +1,64 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { CreateCommentDto } from '../dto/create-comment.dto';
-import { UpdateCommentDto } from '../dto/update-comment.dto';
+import { CommentDocument } from '../entities/comment.entity';
 
 @Injectable()
 export class CommentService {
-  create(createCommentDto: CreateCommentDto) {
-    return 'This action adds a new comment';
+  constructor(
+    @InjectModel('comment') private readonly commentModel: Model<CommentDocument>
+  ) { }
+
+  async getCommentsById(id: string) {
+    try {
+      const results = await this.commentModel.findById(id);
+
+      return CreateCommentDto.convertAllElements(
+        results.id, 
+        results.title,
+        results.body, 
+        results.author
+      );
+    } catch (ex) {
+      throw new InternalServerErrorException('Internal server error');
+    }
   }
 
-  findAll() {
-    return `This action returns all comment`;
+  async getAllComments() {
+    try {
+
+      const comments: CreateCommentDto[] = [];
+
+      const results = await this.commentModel.find();
+
+      results.map((item) => {
+        comments.push(
+          CreateCommentDto.convertAllElements(
+            item.id,
+            item.title,
+            item.body,
+            item.author,
+          )
+        )
+      });
+
+      return comments;
+
+    } catch (ex) {
+      throw new InternalServerErrorException('Internal server error');
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
-  }
+  async createUser(createCommentDto: CreateCommentDto): Promise<Comment> {
+    try {
+      const createComment = new this.commentModel(createCommentDto);
+      const result = await createComment.save();
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
-  }
+      return result.id;
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+    } catch (ex) {
+      throw new InternalServerErrorException('Internal server error');
+    }
   }
 }
