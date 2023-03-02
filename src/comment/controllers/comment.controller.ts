@@ -50,7 +50,7 @@ export class CommentController {
     const commentResponse = await this.commentService.createComment(payloadCreate);
 
     response.status(HttpStatus.CREATED).send({
-      message: 'Comment successfully created',
+      message: 'Comentário criado com sucesso',
       id: commentResponse
     })
   }
@@ -64,8 +64,21 @@ export class CommentController {
     const commentResponse = await this.commentService.updateComment(payloadUpdate);
 
     response.status(HttpStatus.CREATED).send({
-      message: 'Comment successfully created',
+      message: 'Comentário atualizado com sucesso',
       id: commentResponse
+    })
+  }
+
+  @Delete(':id')    
+  @ApiOperation({ summary: 'Excluir um comentário' })
+  async deleteComment(
+    @Res() response,
+    @Param('id') id: string
+  ) {
+    const commentResponse = await this.commentService.deleteComment(id)
+
+    response.status(HttpStatus.CREATED).send({
+      message: 'Comentário excluido com sucesso'
     })
   }
 }

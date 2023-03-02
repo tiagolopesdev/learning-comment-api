@@ -107,4 +107,16 @@ export class CommentService {
       throw new InternalServerErrorException('Internal server error');
     }
   }
+
+  async deleteComment(id: string) {
+    try {
+
+      const commentDeleted = this.commentModel.findByIdAndRemove(id);
+
+      return commentDeleted;
+
+    } catch (ex) {
+      throw new InternalServerErrorException('Internal server error');
+    }
+  }
 }
