@@ -41,7 +41,7 @@ export class CommentController {
     response.status(HttpStatus.OK).send(commentReponse);
   }
 
-  @Post()    
+  @Post('createComment')    
   @ApiOperation({ summary: 'Adicionar um comentário' })
   async createComment(
     @Res() response,
