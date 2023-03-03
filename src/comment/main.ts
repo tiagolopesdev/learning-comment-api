@@ -5,6 +5,8 @@ import { CommentModule } from './comment.module';
 async function bootstrap() {
   const app = await NestFactory.create(CommentModule);
 
+  app.enableCors();
+
   const config = new DocumentBuilder()
     .setTitle('Comment API')
     .setDescription('API used to study framework Nest js')
